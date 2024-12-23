@@ -12,6 +12,9 @@ struct ActivityModel {
     let date: Date
     let caption: String
     let postImg: Data
+    let saved: Bool
+    let liked: Bool
+    let id : Int
 }
 
 
@@ -53,7 +56,7 @@ final class PersistentStorage {
     }
     
     
-    func createData(postedByName: String, postedByDP: Data, postImg: Data, caption: String, date: Date) {
+    func createData(postedByName: String, postedByDP: Data, postImg: Data, caption: String, date: Date, id: Int) {
         
         let managedContext = viewContext
         
@@ -66,6 +69,9 @@ final class PersistentStorage {
             user.setValue(caption, forKeyPath: "caption")
             user.setValue(postedByName, forKeyPath: "postedByName")
             user.setValue(Date(), forKeyPath: "date")
+            user.setValue(false, forKeyPath: "saved")
+            user.setValue(false, forKeyPath: "liked")
+            user.setValue(id, forKeyPath: "id")
             
         do {
             try managedContext.save()
@@ -73,10 +79,10 @@ final class PersistentStorage {
             print("Could not save data: \(error), \(error.userInfo)")
         }
     }
-    
-    
+
     
     func retrieveData() -> [ActivityModel] {
+        
         
         let managedContext = viewContext
 
@@ -94,6 +100,11 @@ final class PersistentStorage {
                    let postedByDP = activity.value(forKey: "postedByDP") as? Data,
                    let date = activity.value(forKey: "date") as? Date,
                    let postImg = activity.value(forKey: "postImg") as? Data,
+                   //new
+                   let saved = activity.value(forKey: "saved") as? Bool,
+                   let liked = activity.value(forKey: "liked") as? Bool,
+                   let id = activity.value(forKey: "id") as? Int,
+                   
                    let caption = activity.value(forKey: "caption") as? String {
                     
                     
@@ -102,7 +113,11 @@ final class PersistentStorage {
                         postedByDP: postedByDP,
                         date: date,
                         caption: caption,
-                        postImg: postImg
+                        postImg: postImg,
+                        //new
+                        saved: saved,
+                        liked: liked,
+                        id: id
                     ))
                 }
             }
@@ -113,6 +128,40 @@ final class PersistentStorage {
             return []
         }
     }
+    //get id from table view cell
+    func updateData(id: Int, savedStatus: Bool, likedStatus: Bool, isSave: Bool, isLike: Bool) {
+        // Get the context from the persistent container
+        let managedContext = viewContext
+        
+        // Create the fetch request for "User" entity, filtering by username
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "Activity")
+        fetchRequest.predicate = NSPredicate(format: "id = %@", NSNumber(value: id))
 
+
+        do {
+            // Fetch the user record to update
+            let result = try managedContext.fetch(fetchRequest)
+            
+            if let objectToUpdate = result.first as? NSManagedObject {
+                // Modify the attributes of the fetched object
+                
+                if isSave {
+                    objectToUpdate.setValue(savedStatus, forKey: "saved")
+                }
+                
+                if isLike {
+                    objectToUpdate.setValue(likedStatus, forKey: "liked")
+                }
+                
+                // Save the updated context
+                try managedContext.save()
+            }
+            
+        } catch {
+            print("Failed to update data: \(error)")
+        }
+
+        
+    }
     
 }

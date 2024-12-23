@@ -16,12 +16,11 @@ class ViewController2: UIViewController {
     
     
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
         displayImg.layer.cornerRadius = displayImg.frame.height / 2
-        // Add tap gesture to displayImg
+        // Add tap gesture to 
         let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(imageTapped(_:)))
         displayImg.isUserInteractionEnabled = true
         displayImg.addGestureRecognizer(tapGestureRecognizer)
@@ -32,11 +31,7 @@ class ViewController2: UIViewController {
         contentImg.isUserInteractionEnabled = true
         contentImg.addGestureRecognizer(tapGestureRecognizer2)
         
-        
-        
     }
-    
-    
     
     @objc func imageTapped(_ sender: UITapGestureRecognizer) {
         tappedImageView = sender.view as? UIImageView
@@ -56,16 +51,18 @@ class ViewController2: UIViewController {
         
         let profileImageData = displayImage.jpegData(compressionQuality: 1.0)!
         let contentImageData = contentImage.jpegData(compressionQuality: 1.0)!
+        //genetaring uid and setting it to id
+        let uniqueID = Int(Date().timeIntervalSince1970)
         
-        PersistentStorage.shared.createData(postedByName: userNameText, postedByDP: profileImageData, postImg: contentImageData, caption: captionText, date: Date.now)
+        PersistentStorage.shared.createData(postedByName: userNameText, postedByDP: profileImageData, postImg: contentImageData, caption: captionText, date: Date.now, id: uniqueID)
         
         let alert = UIAlertController(title: "Successfully Posted", message: "Posted successfully!!!!", preferredStyle: .alert)
         
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in
-            self.dismiss(animated: true, completion: nil)
+            //self.dismiss(animated: true, completion: nil)
+            self.navigationController?.popViewController(animated: true)
         }
         alert.addAction(okAction)
-        
         alert.dismiss(animated: true, completion: nil)
         present(alert, animated: true, completion: nil)
         

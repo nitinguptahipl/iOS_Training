@@ -7,12 +7,18 @@ class TableViewCell: UITableViewCell {
     @IBOutlet weak var date: UILabel!
     @IBOutlet weak var contentImage: UIImageView!
     @IBOutlet weak var caption: UILabel!
+    @IBOutlet weak var saveImageBtn: UIButton!
+    @IBOutlet weak var likesBtn: UIButton!
 
+    var saveButtonAction: (() -> ())?
+    var likedPosts: (() -> ())?
+    
     @IBAction func likes(_ sender: Any) {
+        likedPosts!()
     }
     
     @IBAction func save(_ sender: Any) {
-        
+        saveButtonAction!()
     }
 
     override func awakeFromNib() {
